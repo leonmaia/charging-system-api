@@ -1,6 +1,7 @@
 package unit.com.newmotion.core.transactions
 
 import com.newmotion.core.transactions.StoreTransactionHandler
+import com.newmotion.models.Transaction
 import com.newmotion.server.DataStore
 import com.newmotion.util.JsonSupport
 import com.twitter.finagle.http.Request
@@ -42,9 +43,23 @@ class StoreTransactionHandlerSpec extends FlatSpec with Matchers with MockitoSug
     response.statusCode should be(201)
   }
 
+  it should "return status code 400 if error" in {
+    val body =
+      """
+        |{
+        |"customerId": "john",
+        |"startTime": "2014-10-28T09:34:17Z",
+        |"invalidField": "2014-10-28T16:45:13Z",
+        |"volume": 32.03
+        |}""".stripMargin
+
+    val response = Await.result(handler.apply(buildRequest(toJson(body))))
+
+    response.statusCode should be(400)
+  }
+
   trait TestRedisStore extends DataStore {
     redisClient = redis
   }
 }
 
-case class Transaction(id: String, startTime: String, endTime: String, volume: Double)
