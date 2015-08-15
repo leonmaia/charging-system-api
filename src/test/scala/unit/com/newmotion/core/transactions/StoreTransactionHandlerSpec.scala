@@ -8,9 +8,11 @@ import com.twitter.finagle.http.Request
 import com.twitter.finagle.redis.Client
 import com.twitter.util.{Await, Future}
 import com.typesafe.config.Config
-import org.mockito.Matchers.{any, anyString}
+import org.jboss.netty.buffer.ChannelBuffer
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
+import com.twitter.util.Future
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach, FlatSpec, Matchers}
 
 class StoreTransactionHandlerSpec extends FlatSpec with Matchers with MockitoSugar with JsonSupport with BeforeAndAfter with BeforeAndAfterEach{
@@ -23,6 +25,8 @@ class StoreTransactionHandlerSpec extends FlatSpec with Matchers with MockitoSug
     request = mock[Request]
     redis = mock[Client]
     handler = new StoreTransactionHandler with TestRedisStore
+    val lng = java.lang.Long.valueOf(1L)
+    when(redis.sAdd(any[ChannelBuffer], any[List[ChannelBuffer]])).thenReturn(Future(lng))
   }
 
   def buildRequest(content: String) = {
@@ -41,6 +45,14 @@ class StoreTransactionHandlerSpec extends FlatSpec with Matchers with MockitoSug
     val response = Await.result(handler.apply(buildRequest(toJson(req))))
 
     response.statusCode should be(201)
+  }
+
+  it should "insert in redis" in {
+    val req = new Transaction(id = "pete", startTime = "2014-10-27T13:32:14Z",
+      endTime = "2014-10-27T14:32:14Z", volume = 13.21)
+    Await.result(handler.apply(buildRequest(toJson(req))))
+    verify(redis, times(1)).set(any[ChannelBuffer], any[ChannelBuffer])
+    verify(redis, times(1)).sAdd(any[ChannelBuffer], any[List[ChannelBuffer]])
   }
 
   it should "return status code 400 if error" in {

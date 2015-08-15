@@ -14,7 +14,12 @@ class StoreTransactionHandler extends Tracing with RedisStore {
 
   def apply(request: Request): Future[Response] = {
     Try(Transaction(request)) match {
-      case Success(t) => Future(respond("", HttpResponseStatus.CREATED))
+      case Success(t) => {
+        val key = s"${t.id}_${t.startTime}"
+        set(s"transaction:$key", request.getContentString())
+        addSet("transactions", key)
+        Future(respond("", HttpResponseStatus.CREATED))
+      }
       case Failure(f) => Future(respond("Errors!", HttpResponseStatus.BAD_REQUEST))
     }
   }
