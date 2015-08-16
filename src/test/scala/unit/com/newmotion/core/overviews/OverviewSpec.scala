@@ -6,7 +6,6 @@ import org.joda.time.LocalDateTime
 import unit.com.newmotion.core.BaseSpec
 
 class OverviewSpec extends BaseSpec {
-  val nextYear = LocalDateTime.now().getYear + 1
 
   behavior of "#apply with tariff"
 

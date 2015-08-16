@@ -9,7 +9,7 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.redis.util.CBToString
 import com.twitter.util.Future
-import org.jboss.netty.handler.codec.http.HttpResponseStatus
+import org.jboss.netty.handler.codec.http.HttpResponseStatus._
 
 import scala.util.{Failure, Success, Try}
 
@@ -17,15 +17,14 @@ class TariffHandler extends Service[Request, Response] with Tracing with RedisSt
   override def apply(request: Request): Future[Response] = {
     Try(Tariff(request)) match {
       case Success(t) =>
-        // todo remove this when sscan is implemented by finagle-redis
         isValid(t.activeStarting) map {
           case x if x =>
             val key = s"${t.activeStarting},${t.startFee},${t.hourlyFee},${t.feePerKWh}"
             addSet("tariffs", key)
-            respond("", HttpResponseStatus.CREATED)
-          case x if !x => respond("", HttpResponseStatus.BAD_REQUEST)
+            respond("", CREATED)
+          case x if !x => respond("", BAD_REQUEST)
         }
-      case Failure(f) => Future(respond("Errors!", HttpResponseStatus.BAD_REQUEST))
+      case Failure(f) => Future(respond("Errors!", BAD_REQUEST))
     }
   }
 

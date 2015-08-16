@@ -15,7 +15,6 @@ import unit.com.newmotion.core.BaseSpec
 
 class TariffHandlerSpec extends BaseSpec {
   var handler: TariffHandler = _
-  val nextYear = LocalDateTime.now().getYear + 1
 
   before {
     request = mock[Request]

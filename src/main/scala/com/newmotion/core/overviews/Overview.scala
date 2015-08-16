@@ -5,7 +5,7 @@ import com.newmotion.core.tariffs.Tariff
 import com.newmotion.core.transactions.Transaction
 
 object Overview {
-  def apply(transactions: List[String], tariffs: List[String]): Overview = {
+  def apply(transactions: List[String], tariffs: List[String] = List.empty): Overview = {
     val transactionsWithTotal = transactions.map { t =>
       val listTariffs = tariffs.map( v => Tariff.fromCSV(v))
       val transaction = Transaction.fromCSV(t)

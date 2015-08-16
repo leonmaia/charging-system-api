@@ -5,7 +5,6 @@ import org.joda.time.LocalDateTime
 import unit.com.newmotion.core.BaseSpec
 
 class TariffSpec extends BaseSpec {
-  val nextYear = LocalDateTime.now().getYear + 1
 
   behavior of "valid json"
 

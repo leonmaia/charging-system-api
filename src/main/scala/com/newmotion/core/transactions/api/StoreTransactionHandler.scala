@@ -7,7 +7,7 @@ import com.newmotion.service.tracing.Tracing
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.Future
-import org.jboss.netty.handler.codec.http.HttpResponseStatus
+import org.jboss.netty.handler.codec.http.HttpResponseStatus._
 
 import scala.util.{Failure, Success, Try}
 
@@ -18,9 +18,9 @@ class StoreTransactionHandler extends Service[Request, Response] with Tracing wi
       case Success(t) => {
         val key = s"${t.id},${t.startTime},${t.endTime},${t.volume}"
         addSet("transactions", key)
-        Future(respond("", HttpResponseStatus.CREATED))
+        Future(respond("", CREATED))
       }
-      case Failure(f) => Future(respond("Errors!", HttpResponseStatus.BAD_REQUEST))
+      case Failure(f) => Future(respond("Errors!", BAD_REQUEST))
     }
   }
 }

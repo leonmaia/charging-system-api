@@ -8,7 +8,6 @@ import org.joda.time.LocalDateTime
 import unit.com.newmotion.core.BaseSpec
 
 class FeeSpec extends BaseSpec {
-  val nextYear = LocalDateTime.now().getYear + 1
   val ds = new DateSupport
 
   behavior of "#apply with valid tariff"
