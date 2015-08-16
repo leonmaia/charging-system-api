@@ -1,5 +1,7 @@
 package com.newmotion.core.overviews.api
 
+import com.newmotion.core.tariffs.Tariff
+import com.newmotion.core.transactions.Transaction
 import com.newmotion.server.RedisStore
 import com.newmotion.server.http.Responses._
 import com.newmotion.service.tracing.Tracing
