@@ -19,12 +19,11 @@ class TariffHandler extends Service[Request, Response] with Tracing with RedisSt
       case Success(t) =>
         // todo remove this when sscan is implemented by finagle-redis
         isValid(t.activeStarting) map {
-          case true =>
+          case x if x =>
             val key = s"${t.activeStarting},${t.startFee},${t.hourlyFee},${t.feePerKWh}"
             addSet("tariffs", key)
             respond("", HttpResponseStatus.CREATED)
-          case false =>
-            respond("", HttpResponseStatus.BAD_REQUEST)
+          case x if !x => respond("", HttpResponseStatus.BAD_REQUEST)
         }
       case Failure(f) => Future(respond("Errors!", HttpResponseStatus.BAD_REQUEST))
     }

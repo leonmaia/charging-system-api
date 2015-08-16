@@ -77,33 +77,48 @@ class TariffHandlerSpec extends BaseSpec {
     response.statusCode should be(400)
   }
 
-  it should "return status code 400 if activeStarting before now" in {
-    val body =
-      s"""{
-        |"startFee": 0.20,
-        |"hourlyFee": 1.00,
-        |"feePerKWh": 0.25,
-        |"activeInvalid": "${nextYear - 3}-10-28T06:00:00Z"
-        |}""".stripMargin
+    it should "return status code 400 if activeStarting before now" in {
+      val body =
+        s"""{
+           |"startFee": 0.20,
+           |"hourlyFee": 1.00,
+           |"feePerKWh": 0.25,
+           |"activeStarting": "$nextYear-10-28T06:00:00Z"
+           |}""".stripMargin
+      val response = Await.result(handler.apply(buildRequest(toJson(body), HttpMethod.POST)))
 
-    val response = Await.result(handler.apply(buildRequest(toJson(body), HttpMethod.POST)))
+      response.statusCode should be(400)
+    }
 
-    response.statusCode should be(400)
+    it should "return status code 400 if latest activeStarting if later" in {
+      when(redis.sMembers(any[ChannelBuffer])).
+        thenReturn(Future(Set(StringToChannelBuffer(s"${nextYear + 1}-10-28T06:00:00Z,something_else"))))
+
+      val tariff = Tariff(0.20, 1.00, 0.25, s"$nextYear-10-28T06:00:00Z")
+      val response = Await.result(handler.apply(buildRequest(toJson(tariff), HttpMethod.POST)))
+
+      response.statusCode should be(400)
+    }
+
+  behavior of "#extractFirstField"
+  it should "represent activeStarting string" in {
+    handler.extractFirstField(s"$nextYear-10-28T06:00:00Z,more_data") should be(s"$nextYear-10-28T06:00:00Z")
   }
 
-  it should "return status code 400 if latest activeStarting if later" in {
+  behavior of "#isValid"
+  it should "return false if later date is stored in redis" in {
     when(redis.sMembers(any[ChannelBuffer])).
-      thenReturn(Future(Set(StringToChannelBuffer(s"$nextYear-10-28T06:00:00Z,something_else"))))
-    val body =
-      s"""{
-         |"startFee": 0.20,
-         |"hourlyFee": 1.00,
-         |"feePerKWh": 0.25,
-         |"activeInvalid": "${nextYear - 1}-10-28T06:00:00Z"
-         |}""".stripMargin
+      thenReturn(Future(Set(StringToChannelBuffer(s"${nextYear + 1}-10-28T06:00:00Z,something_else"))))
+    val result = Await.result(handler.isValid(s"$nextYear-10-28T06:00:00Z"))
 
-    val response = Await.result(handler.apply(buildRequest(toJson(body), HttpMethod.POST)))
+    result should be(false)
+  }
 
-    response.statusCode should be(400)
+  it should "return true if no later date is stored in redis" in {
+    when(redis.sMembers(any[ChannelBuffer])).
+      thenReturn(Future(Set(StringToChannelBuffer(s"${nextYear - 1}-10-28T06:00:00Z,something_else"))))
+    val result = Await.result(handler.isValid(s"$nextYear-10-28T06:00:00Z"))
+
+    result should be(true)
   }
 }

@@ -19,4 +19,3 @@ object Fee {
 }
 
 case class Fee(hourlyFee: BigDecimal, kWhFee: BigDecimal, total: BigDecimal)
-
