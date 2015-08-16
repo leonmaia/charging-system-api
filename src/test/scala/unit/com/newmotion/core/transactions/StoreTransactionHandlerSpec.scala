@@ -50,6 +50,19 @@ class StoreTransactionHandlerSpec extends BaseSpec {
     transaction.volume should be(32.03)
   }
 
+  it should "calculate duration in decimal correctly" in {
+    val t0 = new Transaction(id = "pete", startTime = "2014-10-27T13:32:14Z",
+      endTime = "2014-10-27T14:32:14Z", volume = 13.21)
+    val t1 = new Transaction(id = "pete", startTime = "2014-10-27T13:32:14Z",
+      endTime = "2014-10-27T15:02:14Z", volume = 13.21)
+    val t2 = new Transaction(id = "pete", startTime = "2014-10-27T13:32:14Z",
+      endTime = "2014-10-27T15:04:14Z", volume = 13.21)
+
+    t0.durationInDecimal should be(1.00D)
+    t1.durationInDecimal should be(1.50D)
+    t2.durationInDecimal should be(1.53D)
+  }
+
   it should "insert in redis" in {
     val req = new Transaction(id = "pete", startTime = "2014-10-27T13:32:14Z",
       endTime = "2014-10-27T14:32:14Z", volume = 13.21)

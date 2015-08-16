@@ -17,7 +17,7 @@ import scala.util.{Failure, Success, Try}
 class ComputeFeeHandler extends Service[Request, Response] with Tracing with RedisStore {
   override def apply(request: Request): Future[Response] = {
     Try(Fee(request)) match {
-      case Success(t) => {
+      case Success(t) =>
         // todo remove this when sscan is implemented by finagle-redis
         isValid(t.activeStarting) map {
           case true =>
@@ -27,8 +27,6 @@ class ComputeFeeHandler extends Service[Request, Response] with Tracing with Red
           case false =>
             respond("", HttpResponseStatus.BAD_REQUEST)
         }
-
-      }
       case Failure(f) => Future(respond("Errors!", HttpResponseStatus.BAD_REQUEST))
     }
   }
