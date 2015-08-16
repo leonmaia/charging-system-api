@@ -1,9 +1,10 @@
 package unit.com.newmotion.core.transactions
 
 import com.newmotion.core.transactions.StoreTransactionHandler
-import com.newmotion.server.DataStore
+import com.newmotion.models.Fee
 import com.twitter.finagle.http.Request
 import com.twitter.finagle.redis.Client
+import com.twitter.util.Await
 import unit.com.newmotion.core.BaseSpec
 
 class ComputeFeeHandlerSpec extends BaseSpec {
@@ -33,9 +34,17 @@ class ComputeFeeHandlerSpec extends BaseSpec {
     fee.activeStarting should be("2014-10-28T06:00:00Z")
   }
 
-  trait TestRedisStore extends DataStore {
-    redisClient = redis
+  it should "return status code 400 if error" in {
+    val body =
+      """{
+        |"startFee": 0.20,
+        |"hourlyFee": 1.00,
+        |"feePerKWh": 0.25,
+        |"activeInvalid": "2014-10-28T06:00:00Z"
+        |}""".stripMargin
+
+    val response = Await.result(handler.apply(buildRequest(toJson(body))))
+
+    response.statusCode should be(400)
   }
 }
-
-case class Fee(startFee: Double, hourlyFee: Double, feePerKWh: Double, activeStarting: String)
