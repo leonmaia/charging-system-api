@@ -1,6 +1,6 @@
 package unit.com.newmotion.core.overviews
 
-import com.newmotion.core.transactions.api.OverviewHandler
+import com.newmotion.core.overviews.api.OverviewHandler
 import com.twitter.finagle.http.Request
 import com.twitter.finagle.redis.Client
 import com.twitter.finagle.redis.util.StringToChannelBuffer

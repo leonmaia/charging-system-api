@@ -17,12 +17,12 @@ class TariffSpec extends BaseSpec {
          |"feePerKWh": 0.25,
          |"activeStarting": "$nextYear-10-28T06:00:00Z"
          |}""".stripMargin
-    val fee = Tariff(buildRequest(body.toString))
+    val tariff = Tariff(buildRequest(body.toString))
 
-    fee.startFee should be(0.20D)
-    fee.hourlyFee should be(1.00D)
-    fee.feePerKWh should be(0.25D)
-    fee.activeStarting should be(s"$nextYear-10-28T06:00:00Z")
+    tariff.startFee should be(0.20D)
+    tariff.hourlyFee should be(1.00D)
+    tariff.feePerKWh should be(0.25D)
+    tariff.activeStarting should be(s"$nextYear-10-28T06:00:00Z")
   }
 
   behavior of "invalid json"
@@ -50,5 +50,25 @@ class TariffSpec extends BaseSpec {
            |}""".stripMargin
       Tariff(buildRequest(body.toString))
     }
+  }
+
+  behavior of "#fromCSV"
+
+  it should "return a Tariff" in {
+    val body =
+      s"""{
+         |"startFee": 0.20,
+         |"hourlyFee": 1.00,
+         |"feePerKWh": 0.25,
+         |"activeStarting": "$nextYear-10-28T06:00:00Z"
+                                        |}""".stripMargin
+    val t = Tariff(buildRequest(body.toString))
+    val key = s"${t.activeStarting},${t.startFee},${t.hourlyFee},${t.feePerKWh}"
+    val tFromKey = Tariff.fromCSV(key)
+
+    tFromKey.startFee should be(0.20D)
+    tFromKey.hourlyFee should be(1.00D)
+    tFromKey.feePerKWh should be(0.25D)
+    tFromKey.activeStarting should be(s"$nextYear-10-28T06:00:00Z")
   }
 }

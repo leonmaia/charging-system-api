@@ -14,6 +14,22 @@ object Tariff extends JsonSupport {
       }
     }
   }
+
+  def fromCSV(k: String): Tariff = {
+    object Position extends Enumeration {
+      val ActiveStarting = 0
+      val StartFee       = 1
+      val HourlyFee      = 2
+      val FeePerKWh      = 3
+    }
+
+    val values = k.split(",")
+
+    Tariff(activeStarting = values(Position.ActiveStarting),
+           startFee  = BigDecimal(values(Position.StartFee)),
+           hourlyFee = BigDecimal(values(Position.HourlyFee)),
+           feePerKWh = BigDecimal(values(Position.FeePerKWh)))
+  }
 }
 
 case class Tariff(startFee: BigDecimal, hourlyFee: BigDecimal, feePerKWh: BigDecimal, activeStarting: String) {
