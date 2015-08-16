@@ -1,6 +1,6 @@
-package com.newmotion.core.transactions
+package com.newmotion.core.tariffs.api
 
-import com.newmotion.models.Fee
+import com.newmotion.core.tariffs.Tariff
 import com.newmotion.server.RedisStore
 import com.newmotion.server.http.Responses._
 import com.newmotion.service.tracing.Tracing
@@ -13,9 +13,9 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus
 
 import scala.util.{Failure, Success, Try}
 
-class ComputeFeeHandler extends Service[Request, Response] with Tracing with RedisStore {
+class TariffHandler extends Service[Request, Response] with Tracing with RedisStore {
   override def apply(request: Request): Future[Response] = {
-    Try(Fee(request)) match {
+    Try(Tariff(request)) match {
       case Success(t) =>
         // todo remove this when sscan is implemented by finagle-redis
         isValid(t.activeStarting) map {

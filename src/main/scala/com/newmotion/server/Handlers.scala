@@ -1,7 +1,7 @@
 package com.newmotion.server
 
 import com.newmotion.core.healthcheck.HealthCheckHandler
-import com.newmotion.core.transactions.{OverviewHandler, StoreTransactionHandler}
+import com.newmotion.core.transactions.api.{StoreTransactionHandler, OverviewHandler}
 import com.twitter.server.TwitterServer
 
 trait Handlers extends ConfigLoader {

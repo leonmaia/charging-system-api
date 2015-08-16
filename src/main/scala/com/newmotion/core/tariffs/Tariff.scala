@@ -1,13 +1,13 @@
-package com.newmotion.models
+package com.newmotion.core.tariffs
 
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.newmotion.util.{DateSupport, JsonSupport}
 import com.twitter.finagle.http.Request
 
-object Fee extends JsonSupport {
-  def apply(request: Request): Fee = {
+object Tariff extends JsonSupport {
+  def apply(request: Request): Tariff = {
     try {
-      fromJson[Fee](request.getContentString())
+      fromJson[Tariff](request.getContentString())
     } catch {
       case e: JsonMappingException => {
         throw e.getCause
@@ -15,7 +15,8 @@ object Fee extends JsonSupport {
     }
   }
 }
-case class Fee(startFee: Double, hourlyFee: Double, feePerKWh: Double, activeStarting: String) {
+
+case class Tariff(startFee: BigDecimal, hourlyFee: BigDecimal, feePerKWh: BigDecimal, activeStarting: String) {
   private val ds = new DateSupport
   private val activeStartingDT = ds.parse(activeStarting)
 

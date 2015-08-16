@@ -1,7 +1,7 @@
-package unit.com.newmotion.core.transactions
+package unit.com.newmotion.core.tariffs
 
-import com.newmotion.core.transactions.ComputeFeeHandler
-import com.newmotion.models.Fee
+import com.newmotion.core.tariffs.Tariff
+import com.newmotion.core.tariffs.api.TariffHandler
 import com.twitter.finagle.http.Request
 import com.twitter.finagle.redis.Client
 import com.twitter.finagle.redis.util.StringToChannelBuffer
@@ -13,14 +13,14 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import unit.com.newmotion.core.BaseSpec
 
-class ComputeFeeHandlerSpec extends BaseSpec {
-  var handler: ComputeFeeHandler = _
+class TariffHandlerSpec extends BaseSpec {
+  var handler: TariffHandler = _
   val nextYear = LocalDateTime.now().getYear + 1
 
   before {
     request = mock[Request]
     redis = mock[Client]
-    handler = new ComputeFeeHandler with TestRedisStore
+    handler = new TariffHandler with TestRedisStore
     val lng = java.lang.Long.valueOf(1L)
     when(redis.sAdd(any[ChannelBuffer], any[List[ChannelBuffer]])).thenReturn(Future(lng))
   }
@@ -35,11 +35,11 @@ class ComputeFeeHandlerSpec extends BaseSpec {
         |"feePerKWh": 0.25,
         |"activeStarting": "$nextYear-10-28T06:00:00Z"
         |}""".stripMargin
-    val fee = fromJson[Fee](body)
+    val fee = fromJson[Tariff](body)
 
-    fee.startFee should be(0.20)
-    fee.hourlyFee should be(1.00)
-    fee.feePerKWh should be(0.25)
+    fee.startFee should be(0.20D)
+    fee.hourlyFee should be(1.00D)
+    fee.feePerKWh should be(0.25D)
     fee.activeStarting should be(s"$nextYear-10-28T06:00:00Z")
   }
 
@@ -47,8 +47,8 @@ class ComputeFeeHandlerSpec extends BaseSpec {
     when(redis.sMembers(any[ChannelBuffer])).
       thenReturn(Future(Set(StringToChannelBuffer(s"${nextYear - 1}-10-28T06:00:00Z,something_else"))))
 
-    val fee = Fee(0.20, 1.00, 0.25, s"$nextYear-10-28T06:00:00Z")
-    val response = Await.result(handler.apply(buildRequest(toJson(fee), HttpMethod.POST)))
+    val tariff = Tariff(0.20, 1.00, 0.25, s"$nextYear-10-28T06:00:00Z")
+    val response = Await.result(handler.apply(buildRequest(toJson(tariff), HttpMethod.POST)))
 
     response.statusCode should be(201)
   }
@@ -57,8 +57,8 @@ class ComputeFeeHandlerSpec extends BaseSpec {
     when(redis.sMembers(any[ChannelBuffer])).
       thenReturn(Future(Set(StringToChannelBuffer(s"${nextYear - 1}-10-28T06:00:00Z,something_else"))))
 
-    val fee = Fee(0.20, 1.00, 0.25, s"$nextYear-10-28T06:00:00Z")
-    Await.result(handler.apply(buildRequest(toJson(fee), HttpMethod.POST)))
+    val tariff = Tariff(0.20, 1.00, 0.25, s"$nextYear-10-28T06:00:00Z")
+    Await.result(handler.apply(buildRequest(toJson(tariff), HttpMethod.POST)))
 
     verify(redis, times(1)).sAdd(any[ChannelBuffer], any[List[ChannelBuffer]])
   }

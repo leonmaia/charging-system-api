@@ -1,7 +1,7 @@
 package unit.com.newmotion.core.transactions
 
-import com.newmotion.core.transactions.StoreTransactionHandler
-import com.newmotion.models.Transaction
+import com.newmotion.core.transactions.Transaction
+import com.newmotion.core.transactions.api.StoreTransactionHandler
 import com.twitter.finagle.http.Request
 import com.twitter.finagle.redis.Client
 import com.twitter.util.{Await, Future}

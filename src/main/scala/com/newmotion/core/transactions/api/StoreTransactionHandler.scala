@@ -1,6 +1,6 @@
-package com.newmotion.core.transactions
+package com.newmotion.core.transactions.api
 
-import com.newmotion.models.Transaction
+import com.newmotion.core.transactions.Transaction
 import com.newmotion.server.RedisStore
 import com.newmotion.server.http.Responses._
 import com.newmotion.service.tracing.Tracing

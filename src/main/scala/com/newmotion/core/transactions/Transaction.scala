@@ -1,4 +1,4 @@
-package com.newmotion.models
+package com.newmotion.core.transactions
 
 import com.fasterxml.jackson.annotation.{JsonIgnore, JsonProperty}
 import com.fasterxml.jackson.databind.JsonMappingException

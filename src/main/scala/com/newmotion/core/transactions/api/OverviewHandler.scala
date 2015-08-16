@@ -1,4 +1,4 @@
-package com.newmotion.core.transactions
+package com.newmotion.core.transactions.api
 
 import com.newmotion.server.RedisStore
 import com.newmotion.server.http.Responses._
