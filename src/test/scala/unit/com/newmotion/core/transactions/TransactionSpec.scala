@@ -88,4 +88,24 @@ class TransactionSpec extends BaseSpec {
     t1.durationInDecimal should be(1.50D)
     t2.durationInDecimal should be(1.53D)
   }
+
+  behavior of "#fromCSV"
+
+  it should "return a Tariff" in {
+    val body =
+      """
+        |{
+        |"customerId": "john",
+        |"startTime": "2014-10-28T09:34:17Z",
+        |"endTime": "2014-10-28T16:45:13Z",
+        |"volume": 32.03
+        |}""".stripMargin
+    val t = Transaction(buildRequest(body.toString))
+    val transaction = Transaction.fromCSV(s"${t.id},${t.startTime},${t.endTime},${t.volume}")
+
+    transaction.id should be("john")
+    transaction.startTime should be("2014-10-28T09:34:17Z")
+    transaction.endTime should be("2014-10-28T16:45:13Z")
+    transaction.volume should be(32.03)
+  }
 }

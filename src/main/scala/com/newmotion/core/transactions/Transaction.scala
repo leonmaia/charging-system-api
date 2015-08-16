@@ -15,8 +15,24 @@ object Transaction extends JsonSupport {
       }
     }
   }
+
+  def fromCSV(k: String): Transaction = {
+    object Position extends Enumeration {
+      val Id        = 0
+      val StartTime = 1
+      val EndTime   = 2
+      val Volume    = 3
+    }
+
+    val values = k.split(",")
+
+    Transaction(id = values(Position.Id),
+                startTime = values(Position.StartTime),
+                endTime = values(Position.EndTime),
+                volume = BigDecimal(values(Position.Volume)))
+  }
 }
-case class Transaction(@JsonProperty("customerId") id: String, startTime: String, endTime: String, volume: Double) {
+case class Transaction(@JsonProperty("customerId") id: String, startTime: String, endTime: String, volume: BigDecimal) {
   require(id.nonEmpty)
   require(startTime.nonEmpty)
   require(endTime.nonEmpty)
