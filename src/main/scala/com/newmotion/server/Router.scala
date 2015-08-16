@@ -12,5 +12,6 @@ trait Router extends Handlers {
     case Method.Get ->  Root / "healthcheck" => heathCheckHandler
     case Method.Get ->  Root / "overview" => overviewHandler
     case Method.Post ->  Root / "transactions" => storeTransactionHandler
+    case Method.Post ->  Root / "tariffs" => tariffHandler
   })
 }
