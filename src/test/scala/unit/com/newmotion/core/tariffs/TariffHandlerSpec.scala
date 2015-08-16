@@ -25,23 +25,7 @@ class TariffHandlerSpec extends BaseSpec {
     when(redis.sAdd(any[ChannelBuffer], any[List[ChannelBuffer]])).thenReturn(Future(lng))
   }
 
-  behavior of "#apply"
-
-  it should "parse correctly" in {
-    val body =
-      s"""{
-        |"startFee": 0.20,
-        |"hourlyFee": 1.00,
-        |"feePerKWh": 0.25,
-        |"activeStarting": "$nextYear-10-28T06:00:00Z"
-        |}""".stripMargin
-    val fee = Tariff(buildRequest(body.toString))
-
-    fee.startFee should be(0.20D)
-    fee.hourlyFee should be(1.00D)
-    fee.feePerKWh should be(0.25D)
-    fee.activeStarting should be(s"$nextYear-10-28T06:00:00Z")
-  }
+  behavior of "#apply with valid body"
 
   it should "return status code 201" in {
     when(redis.sMembers(any[ChannelBuffer])).
@@ -63,7 +47,9 @@ class TariffHandlerSpec extends BaseSpec {
     verify(redis, times(1)).sAdd(any[ChannelBuffer], any[List[ChannelBuffer]])
   }
 
-  it should "return status code 400 if error" in {
+  behavior of "#apply with invalid body"
+
+  it should "return status code 400" in {
     val body =
       s"""{
         |"startFee": 0.20,
@@ -77,28 +63,30 @@ class TariffHandlerSpec extends BaseSpec {
     response.statusCode should be(400)
   }
 
-    it should "return status code 400 if activeStarting before now" in {
-      val body =
-        s"""{
-           |"startFee": 0.20,
-           |"hourlyFee": 1.00,
-           |"feePerKWh": 0.25,
-           |"activeStarting": "$nextYear-10-28T06:00:00Z"
-           |}""".stripMargin
-      val response = Await.result(handler.apply(buildRequest(toJson(body), HttpMethod.POST)))
+  behavior of "#apply breaking activeStarting requirements"
 
-      response.statusCode should be(400)
-    }
+  it should "return status code 400 if activeStarting before now" in {
+    val body =
+      s"""{
+         |"startFee": 0.20,
+         |"hourlyFee": 1.00,
+         |"feePerKWh": 0.25,
+         |"activeStarting": "$nextYear-10-28T06:00:00Z"
+                                        |}""".stripMargin
+    val response = Await.result(handler.apply(buildRequest(toJson(body), HttpMethod.POST)))
 
-    it should "return status code 400 if latest activeStarting if later" in {
-      when(redis.sMembers(any[ChannelBuffer])).
-        thenReturn(Future(Set(StringToChannelBuffer(s"${nextYear + 1}-10-28T06:00:00Z,something_else"))))
+    response.statusCode should be(400)
+  }
 
-      val tariff = Tariff(0.20, 1.00, 0.25, s"$nextYear-10-28T06:00:00Z")
-      val response = Await.result(handler.apply(buildRequest(toJson(tariff), HttpMethod.POST)))
+  it should "return status code 400 if latest activeStarting if later" in {
+    when(redis.sMembers(any[ChannelBuffer])).
+      thenReturn(Future(Set(StringToChannelBuffer(s"${nextYear + 1}-10-28T06:00:00Z,something_else"))))
 
-      response.statusCode should be(400)
-    }
+    val tariff = Tariff(0.20, 1.00, 0.25, s"$nextYear-10-28T06:00:00Z")
+    val response = Await.result(handler.apply(buildRequest(toJson(tariff), HttpMethod.POST)))
+
+    response.statusCode should be(400)
+  }
 
   behavior of "#extractFirstField"
   it should "represent activeStarting string" in {

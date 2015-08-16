@@ -28,39 +28,39 @@ class TransactionSpec extends BaseSpec {
   behavior of "invalid json"
 
   it should "fail on endTime requirement" in {
-    intercept[JsonParseException] {
+    intercept[NullPointerException] {
       val body =
         """
           |{
           |"customerId": "john",
           |"startTime": "2014-10-28T09:34:17Z",
-          |"volume": 32.03,
+          |"volume": 32.03
           |}""".stripMargin
       Transaction(buildRequest(body.toString))
     }
   }
 
   it should "fail on customerId requirement" in {
-    intercept[JsonParseException] {
+    intercept[NullPointerException] {
       val body =
         """
           |{
           |"startTime": "2014-10-28T09:34:17Z",
           |"endTime": "2014-10-28T16:45:13Z",
-          |"volume": 32.03,
+          |"volume": 32.03
           |}""".stripMargin
       Transaction(buildRequest(body.toString))
     }
   }
 
   it should "fail on startTime requirement" in {
-    intercept[JsonParseException] {
+    intercept[NullPointerException] {
       val body =
         """
           |{
           |"customerId": "john",
           |"endTime": "2014-10-28T16:45:13Z",
-          |"volume": 32.03,
+          |"volume": 32.03
           |}""".stripMargin
       Transaction(buildRequest(body.toString))
     }
