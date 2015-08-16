@@ -1,8 +1,7 @@
 package unit.com.newmotion.core.transactions
 
 
-import com.newmotion.core.transactions.StoreTransactionHandler
-import com.newmotion.models.Transaction
+import com.newmotion.core.transactions.OverviewHandler
 import com.newmotion.server.DataStore
 import com.newmotion.util.JsonSupport
 import com.twitter.finagle.http.Request
@@ -11,18 +10,9 @@ import com.twitter.finagle.redis.util.StringToChannelBuffer
 import com.twitter.util.{Await, Future}
 import com.typesafe.config.Config
 import org.jboss.netty.buffer.ChannelBuffer
+import org.jboss.netty.handler.codec.http.HttpMethod
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach, FlatSpec, Matchers}
-import com.newmotion.core.transactions.OverviewHandler
-import com.newmotion.server.DataStore
-import com.newmotion.util.JsonSupport
-import com.twitter.finagle.http.Request
-import com.twitter.finagle.redis.Client
-import com.twitter.util.Await
-import com.typesafe.config.Config
-import org.jboss.netty.handler.codec.http.HttpMethod
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach, FlatSpec, Matchers}
 
@@ -77,6 +67,16 @@ class OverviewHandlerSpec extends FlatSpec with Matchers with MockitoSugar with 
     val response = Await.result(handler.apply(buildRequest()))
 
     response.statusCode should be(200)
+  }
+
+  it should "show correctly the content" in {
+    when(redis.sCard(any[ChannelBuffer])).thenReturn(Future(java.lang.Long.valueOf(2L)))
+    val list = Set(StringToChannelBuffer("alguma_coisa"), StringToChannelBuffer("outra_coisa"))
+    when(redis.sMembers(any[ChannelBuffer])).thenReturn(Future(list))
+    val response = Await.result(handler.apply(buildRequest()))
+
+    response.statusCode should be(200)
+    response.getContentString should be("alguma_coisa outra_coisa")
   }
 
   trait TestRedisStore extends DataStore {
