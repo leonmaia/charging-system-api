@@ -1,21 +1,28 @@
 package unit.com.newmotion.core.transactions
 
-import com.newmotion.core.transactions.StoreTransactionHandler
+import com.newmotion.core.transactions.ComputeFeeHandler
 import com.newmotion.models.Fee
 import com.twitter.finagle.http.Request
 import com.twitter.finagle.redis.Client
-import com.twitter.util.Await
+import com.twitter.finagle.redis.util.StringToChannelBuffer
+import com.twitter.util.{Await, Future}
+import org.jboss.netty.buffer.ChannelBuffer
+import org.jboss.netty.handler.codec.http.HttpMethod
 import org.joda.time.LocalDateTime
+import org.mockito.Matchers.any
+import org.mockito.Mockito._
 import unit.com.newmotion.core.BaseSpec
 
 class ComputeFeeHandlerSpec extends BaseSpec {
-  var handler: StoreTransactionHandler = _
+  var handler: ComputeFeeHandler = _
   val nextYear = LocalDateTime.now().getYear + 1
 
   before {
     request = mock[Request]
     redis = mock[Client]
-    handler = new StoreTransactionHandler with TestRedisStore
+    handler = new ComputeFeeHandler with TestRedisStore
+    val lng = java.lang.Long.valueOf(1L)
+    when(redis.sAdd(any[ChannelBuffer], any[List[ChannelBuffer]])).thenReturn(Future(lng))
   }
 
   behavior of "#apply"
@@ -36,6 +43,26 @@ class ComputeFeeHandlerSpec extends BaseSpec {
     fee.activeStarting should be(s"$nextYear-10-28T06:00:00Z")
   }
 
+  it should "return status code 201" in {
+    when(redis.sMembers(any[ChannelBuffer])).
+      thenReturn(Future(Set(StringToChannelBuffer(s"${nextYear - 1}-10-28T06:00:00Z,something_else"))))
+
+    val fee = Fee(0.20, 1.00, 0.25, s"$nextYear-10-28T06:00:00Z")
+    val response = Await.result(handler.apply(buildRequest(toJson(fee), HttpMethod.POST)))
+
+    response.statusCode should be(201)
+  }
+
+  it should "insert in redis" in {
+    when(redis.sMembers(any[ChannelBuffer])).
+      thenReturn(Future(Set(StringToChannelBuffer(s"${nextYear - 1}-10-28T06:00:00Z,something_else"))))
+
+    val fee = Fee(0.20, 1.00, 0.25, s"$nextYear-10-28T06:00:00Z")
+    Await.result(handler.apply(buildRequest(toJson(fee), HttpMethod.POST)))
+
+    verify(redis, times(1)).sAdd(any[ChannelBuffer], any[List[ChannelBuffer]])
+  }
+
   it should "return status code 400 if error" in {
     val body =
       s"""{
@@ -45,7 +72,7 @@ class ComputeFeeHandlerSpec extends BaseSpec {
         |"activeInvalid": "$nextYear-10-28T06:00:00Z"
         |}""".stripMargin
 
-    val response = Await.result(handler.apply(buildRequest(toJson(body))))
+    val response = Await.result(handler.apply(buildRequest(toJson(body), HttpMethod.POST)))
 
     response.statusCode should be(400)
   }
@@ -59,7 +86,23 @@ class ComputeFeeHandlerSpec extends BaseSpec {
         |"activeInvalid": "${nextYear - 3}-10-28T06:00:00Z"
         |}""".stripMargin
 
-    val response = Await.result(handler.apply(buildRequest(toJson(body))))
+    val response = Await.result(handler.apply(buildRequest(toJson(body), HttpMethod.POST)))
+
+    response.statusCode should be(400)
+  }
+
+  it should "return status code 400 if latest activeStarting if later" in {
+    when(redis.sMembers(any[ChannelBuffer])).
+      thenReturn(Future(Set(StringToChannelBuffer(s"$nextYear-10-28T06:00:00Z,something_else"))))
+    val body =
+      s"""{
+         |"startFee": 0.20,
+         |"hourlyFee": 1.00,
+         |"feePerKWh": 0.25,
+         |"activeInvalid": "${nextYear - 1}-10-28T06:00:00Z"
+         |}""".stripMargin
+
+    val response = Await.result(handler.apply(buildRequest(toJson(body), HttpMethod.POST)))
 
     response.statusCode should be(400)
   }
