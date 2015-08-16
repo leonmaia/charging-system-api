@@ -1,11 +1,12 @@
 package com.newmotion.models
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.newmotion.util.JsonSupport
 import com.twitter.finagle.http.Request
 
 object Transaction extends JsonSupport {
-  def apply(request: Request): Transaction = {
+  def apply(request: Request): Transaction= {
     try {
       fromJson[Transaction](request.getContentString())
     } catch {
@@ -15,5 +16,4 @@ object Transaction extends JsonSupport {
     }
   }
 }
-
-case class Transaction(id: String, startTime: String, endTime: String, volume: Double)
+case class Transaction(@JsonProperty("customerId") id: String, startTime: String, endTime: String, volume: Double)

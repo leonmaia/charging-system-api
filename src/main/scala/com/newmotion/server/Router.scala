@@ -10,5 +10,7 @@ trait Router extends Handlers {
 
   lazy val router = HttpRouter.forRoutes({
     case Method.Get ->  Root / "healthcheck" => heathCheckHandler
+    case Method.Get ->  Root / "overview" => overviewHandler
+    case Method.Post ->  Root / "transactions" => storeTransactionHandler
   })
 }
