@@ -1,26 +1,17 @@
 package unit.com.newmotion.core.overviews
 
 import com.newmotion.core.transactions.OverviewHandler
-import com.newmotion.server.DataStore
-import com.newmotion.util.JsonSupport
 import com.twitter.finagle.http.Request
 import com.twitter.finagle.redis.Client
 import com.twitter.finagle.redis.util.StringToChannelBuffer
 import com.twitter.util.{Await, Future}
-import com.typesafe.config.Config
 import org.jboss.netty.buffer.ChannelBuffer
-import org.jboss.netty.handler.codec.http.HttpMethod
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach, FlatSpec, Matchers}
-import unit.com.newmotion.core.RequestHelper
+import unit.com.newmotion.core.BaseSpec
 
-class OverviewHandlerSpec extends FlatSpec with Matchers with MockitoSugar with JsonSupport with BeforeAndAfter with BeforeAndAfterEach with RequestHelper {
-  var config = mock[Config]
-  var request: Request = _
+class OverviewHandlerSpec extends BaseSpec {
   var handler: OverviewHandler = _
-  implicit var redis: Client = _
 
   before {
     request = mock[Request]
@@ -61,9 +52,5 @@ class OverviewHandlerSpec extends FlatSpec with Matchers with MockitoSugar with 
 
     response.statusCode should be(200)
     response.getContentString should be("alguma_coisa outra_coisa")
-  }
-
-  trait TestRedisStore extends DataStore {
-    redisClient = redis
   }
 }
