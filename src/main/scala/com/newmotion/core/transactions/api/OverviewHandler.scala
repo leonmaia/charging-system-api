@@ -15,7 +15,8 @@ class OverviewHandler extends Service[Request, Response] with Tracing with Redis
       case l if l > 0 =>
         getAllMembers("transactions") flatMap {
           resp =>
-            Future(respond(resp.map(CBToString(_)).mkString(" "), HttpResponseStatus.OK, contentType = "text/csv"))
+            val transactions = resp.map(CBToString(_)).mkString(" ")
+            Future(respond(transactions, HttpResponseStatus.OK, contentType = "text/csv"))
         }
       case _ => Future(respond("", HttpResponseStatus.NOT_FOUND))
     }

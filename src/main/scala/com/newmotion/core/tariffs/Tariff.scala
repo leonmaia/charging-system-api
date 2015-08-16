@@ -20,6 +20,6 @@ case class Tariff(startFee: BigDecimal, hourlyFee: BigDecimal, feePerKWh: BigDec
   private val ds = new DateSupport
   private val activeStartingDT = ds.parse(activeStarting)
 
-  require(activeStartingDT.isAfterNow, "cannot retroactively change the charging tariff")
+  require(activeStartingDT.isAfterNow)
 }
 

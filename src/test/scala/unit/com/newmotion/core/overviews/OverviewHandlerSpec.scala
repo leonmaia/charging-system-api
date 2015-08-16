@@ -19,14 +19,7 @@ class OverviewHandlerSpec extends BaseSpec {
     handler = new OverviewHandler with TestRedisStore
   }
 
-  behavior of "#apply"
-
-  it should "return status code 404 if there is no resources" in {
-    when(redis.sCard(any[ChannelBuffer])).thenReturn(Future(java.lang.Long.valueOf(0L)))
-    val response = Await.result(handler.apply(buildRequest()))
-
-    response.statusCode should be(404)
-  }
+  behavior of "#apply with resources"
 
   it should "respond with content type text/csv" in {
     when(redis.sCard(any[ChannelBuffer])).thenReturn(Future(java.lang.Long.valueOf(1L)))
@@ -36,7 +29,7 @@ class OverviewHandlerSpec extends BaseSpec {
     response.contentType.get should be("text/csv;charset=utf-8")
   }
 
-  it should "return status code 200 if resource exists" in {
+  it should "return status code 200" in {
     when(redis.sCard(any[ChannelBuffer])).thenReturn(Future(java.lang.Long.valueOf(1L)))
     when(redis.sMembers(any[ChannelBuffer])).thenReturn(Future(Set(StringToChannelBuffer("alguma_coisa"))))
     val response = Await.result(handler.apply(buildRequest()))
@@ -52,5 +45,14 @@ class OverviewHandlerSpec extends BaseSpec {
 
     response.statusCode should be(200)
     response.getContentString should be("alguma_coisa outra_coisa")
+  }
+
+  behavior of "#apply without resources"
+
+  it should "return status code 404 if there is no resources" in {
+    when(redis.sCard(any[ChannelBuffer])).thenReturn(Future(java.lang.Long.valueOf(0L)))
+    val response = Await.result(handler.apply(buildRequest()))
+
+    response.statusCode should be(404)
   }
 }

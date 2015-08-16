@@ -6,7 +6,7 @@ import com.newmotion.util.{DateSupport, JsonSupport}
 import com.twitter.finagle.http.Request
 
 object Transaction extends JsonSupport {
-  def apply(request: Request): Transaction= {
+  def apply(request: Request): Transaction = {
     try {
       fromJson[Transaction](request.getContentString())
     } catch {
@@ -17,6 +17,10 @@ object Transaction extends JsonSupport {
   }
 }
 case class Transaction(@JsonProperty("customerId") id: String, startTime: String, endTime: String, volume: Double) {
+  require(id.nonEmpty)
+  require(startTime.nonEmpty)
+  require(endTime.nonEmpty)
+
   private val ds = new DateSupport()
   private val stDate = ds.parse(startTime)
   private val edDate = ds.parse(endTime)

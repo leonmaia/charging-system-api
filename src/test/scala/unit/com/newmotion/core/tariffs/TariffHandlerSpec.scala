@@ -35,7 +35,7 @@ class TariffHandlerSpec extends BaseSpec {
         |"feePerKWh": 0.25,
         |"activeStarting": "$nextYear-10-28T06:00:00Z"
         |}""".stripMargin
-    val fee = fromJson[Tariff](body)
+    val fee = Tariff(buildRequest(body.toString))
 
     fee.startFee should be(0.20D)
     fee.hourlyFee should be(1.00D)
