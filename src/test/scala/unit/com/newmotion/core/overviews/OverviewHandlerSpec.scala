@@ -1,5 +1,4 @@
-package unit.com.newmotion.core.transactions
-
+package unit.com.newmotion.core.overviews
 
 import com.newmotion.core.transactions.OverviewHandler
 import com.newmotion.server.DataStore
@@ -15,8 +14,9 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach, FlatSpec, Matchers}
+import unit.com.newmotion.core.RequestHelper
 
-class OverviewHandlerSpec extends FlatSpec with Matchers with MockitoSugar with JsonSupport with BeforeAndAfter with BeforeAndAfterEach{
+class OverviewHandlerSpec extends FlatSpec with Matchers with MockitoSugar with JsonSupport with BeforeAndAfter with BeforeAndAfterEach with RequestHelper {
   var config = mock[Config]
   var request: Request = _
   var handler: OverviewHandler = _
@@ -26,22 +26,6 @@ class OverviewHandlerSpec extends FlatSpec with Matchers with MockitoSugar with 
     request = mock[Request]
     redis = mock[Client]
     handler = new OverviewHandler with TestRedisStore
-  }
-
-  def buildRequest(method: HttpMethod = HttpMethod.GET) = {
-    val req = Request()
-    req.setContentTypeJson()
-    req.setMethod(method)
-
-    req
-  }
-
-  def buildRequest(content: String) = {
-    val req = Request()
-    req.setContentString(content)
-    req.setContentTypeJson()
-
-    req
   }
 
   behavior of "#apply"
