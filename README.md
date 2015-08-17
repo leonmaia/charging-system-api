@@ -3,6 +3,16 @@ charging-system-api
 
 An charging system in Finagle with Scala
 
+Introduction
+-----------
+Charging System API built using Finagle with Scala.
+
+Libraries:
+
+- Joda-Time: `SimpleDateFormat` is not thread-safe.
+- Scalatest: Test library for scala.
+- Redis: [`Finagle-Redis`](https://github.com/twitter/finagle/tree/develop/finagle-redis) was choosed for this task. Jedis is another pretty good library but Finagle-Redis is `non-blocking`, which led me to choose it.
+
 Overview
 -----------
 ### POST /transactions
@@ -76,6 +86,9 @@ $ git clone git@github.com:leonmaia/charging-system-api.git
 $ cd ./path/to/repo
 $ vagrant up --provision
 ```
+[`Upstart`](http://upstart.ubuntu.com/) is being used to run the api as a
+ubuntu service.
+
 
 ### Local
 ```
@@ -102,4 +115,4 @@ Or you can view a coverage report:
 ```
 $ ./sbt cov
 ```
-And open the `index.html` file at ./path/to/repo/target/scala-2.11/scoverage-report
+Open `index.html` file at ./path/to/repo/target/scala-2.11/scoverage-report
