@@ -1,6 +1,7 @@
 package com.newmotion.server
 
 import com.newmotion.core.healthcheck.HealthCheckHandler
+import com.newmotion.core.invoices.api.InvoiceHandler
 import com.newmotion.core.overviews.api.OverviewHandler
 import com.newmotion.core.tariffs.api.TariffHandler
 import com.newmotion.core.transactions.api.StoreTransactionHandler
@@ -11,6 +12,7 @@ trait Handlers extends ConfigLoader {
 
   lazy val storeTransactionHandler = new StoreTransactionHandler
   lazy val tariffHandler = new TariffHandler
+  lazy val invoiceHandler = new InvoiceHandler
   lazy val overviewHandler = new OverviewHandler
   lazy val heathCheckHandler = new HealthCheckHandler
 }

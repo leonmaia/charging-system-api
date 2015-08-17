@@ -34,7 +34,7 @@ class StoreTransactionHandlerSpec extends BaseSpec {
   }
 
   it should "insert in redis" in {
-    val req = new Transaction(id = "pete", startTime = "2014-10-27T13:32:14Z",
+    val req = Transaction(id = "pete", startTime = "2014-10-27T13:32:14Z",
       endTime = "2014-10-27T14:32:14Z", volume = 13.21)
     Await.result(handler.apply(buildRequest(toJson(req))))
     verify(redis, times(1)).sAdd(any[ChannelBuffer], any[List[ChannelBuffer]])

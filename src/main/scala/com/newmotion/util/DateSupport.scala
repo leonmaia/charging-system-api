@@ -1,7 +1,7 @@
 package com.newmotion.util
 
 import org.joda.time.{Duration, DateTimeConstants, DateTime, DateTimeZone}
-import org.joda.time.format.ISODateTimeFormat
+import org.joda.time.format.{DateTimeFormat, ISODateTimeFormat}
 
 import scala.math.BigDecimal.RoundingMode
 
@@ -16,4 +16,6 @@ class DateSupport {
   def durationToDecimal(duration: Duration) = BigDecimal.valueOf(duration.getMillis).
     /(BigDecimal.valueOf(DateTimeConstants.MILLIS_PER_HOUR))
     .setScale(2, RoundingMode.HALF_DOWN)
+
+  def parseWithCustomFmt(value: String, fmt: String) = parse(value).toString(fmt)
 }
