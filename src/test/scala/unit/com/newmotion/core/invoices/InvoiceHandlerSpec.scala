@@ -66,4 +66,5 @@ class InvoiceHandlerSpec extends BaseSpec {
 
     filters.size should be(3)
   }
+
 }

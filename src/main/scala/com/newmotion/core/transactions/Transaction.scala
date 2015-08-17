@@ -16,7 +16,7 @@ object Transaction extends JsonSupport {
     }
   }
 
-  def fromCSV(k: String): Transaction = {
+  def fromCSV(key: String): Transaction = {
     object Position extends Enumeration {
       val Id        = 0
       val StartTime = 1
@@ -24,7 +24,7 @@ object Transaction extends JsonSupport {
       val Volume    = 3
     }
 
-    val values = k.split(",")
+    val values = key.split(",")
 
     Transaction(id = values(Position.Id),
                 startTime = values(Position.StartTime),
@@ -37,12 +37,12 @@ case class Transaction(@JsonProperty("customerId") id: String, startTime: String
   require(startTime.nonEmpty)
   require(endTime.nonEmpty)
 
-  private val ds = new DateSupport()
-  private val stDate = ds.parse(startTime)
-  private val edDate = ds.parse(endTime)
-  private val duration = ds.getDuration(stDate, edDate)
+  private val dateSupport = new DateSupport()
+  private val startDate = dateSupport.parse(startTime)
+  private val endDate = dateSupport.parse(endTime)
+  private val duration = dateSupport.getDuration(startDate, endDate)
 
-  @JsonIgnore val durationInDecimal = ds.durationToDecimal(duration)
+  @JsonIgnore val durationInDecimal = dateSupport.durationToDecimal(duration)
 
   def createCSVKey = s"$id,$startTime,$endTime,$volume"
 }

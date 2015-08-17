@@ -15,11 +15,9 @@ class StoreTransactionHandler extends Service[Request, Response] with Tracing wi
 
   def apply(request: Request): Future[Response] = {
     Try(Transaction(request)) match {
-      case Success(t) => {
-        val key = s"${t.id},${t.startTime},${t.endTime},${t.volume}"
-        addSet("transactions", key)
+      case Success(t) =>
+        addSet("transactions", t.createCSVKey)
         Future(respond("", CREATED))
-      }
       case Failure(f) => Future(respond("Errors!", BAD_REQUEST))
     }
   }

@@ -1,7 +1,7 @@
 package com.newmotion.util
 
-import org.joda.time.{Duration, DateTimeConstants, DateTime, DateTimeZone}
-import org.joda.time.format.{DateTimeFormat, ISODateTimeFormat}
+import org.joda.time.format.ISODateTimeFormat
+import org.joda.time.{DateTime, DateTimeConstants, DateTimeZone, Duration}
 
 import scala.math.BigDecimal.RoundingMode
 

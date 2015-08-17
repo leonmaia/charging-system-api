@@ -11,8 +11,8 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus._
 class OverviewHandler extends Service[Request, Response] with Tracing with TransactionFees {
   def apply(request: Request): Future[Response] = {
     getSetLen("transactions") flatMap {
-      case l if l > 0 =>
-        build map ( t => respond(Overview(t).asCSV, OK, contentType = "text/csv"))
+      case length if length > 0 =>
+        requestTransactions map ( transactions => respond(Overview(transactions).asCSV, OK, contentType = "text/csv"))
       case _ => Future(respond("", NOT_FOUND))
     }
   }

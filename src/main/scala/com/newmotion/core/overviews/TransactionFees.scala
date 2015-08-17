@@ -8,7 +8,7 @@ import com.twitter.finagle.redis.util.CBToString
 import com.twitter.util.Future
 
 trait TransactionFees extends RedisStore {
-  def build: Future[List[Transaction]] = {
+  def requestTransactions: Future[List[Transaction]] = {
     getAllMembers("transactions") flatMap {
       transactions =>
         getAllMembers("tariffs") map { tariffs =>
@@ -18,12 +18,13 @@ trait TransactionFees extends RedisStore {
     }
   }
 
+  //todo same method in Overview apply
   def applyFee(transactions: List[String], tariffs: List[String] = List.empty): List[Transaction] = {
-    transactions.map { t =>
-      val listTariffs = tariffs.map( v => Tariff.fromCSV(v))
-      val transaction = Transaction.fromCSV(t)
+    transactions.map { transactionKey =>
+      val listTariffs = tariffs.map(Tariff.fromCSV)
+      val transaction = Transaction.fromCSV(transactionKey)
       Fee(transaction, listTariffs) match {
-        case Some(f) => transaction.copy(total = Option(f.total))
+        case Some(fee) => transaction.copy(total = Option(fee.total))
         case _ => transaction
       }
     }

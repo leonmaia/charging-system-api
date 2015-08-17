@@ -21,7 +21,7 @@ class InvoiceHandler extends TransactionFees {
     def apply(request: Request): Future[Response] = {
       getSetLen("transactions") flatMap {
         case l if l > 0 =>
-          build map (o => Invoice(filter(o.filter(_.total.isDefined), createFilters)) match {
+          requestTransactions map (o => Invoice(filter(o.filter(_.total.isDefined), createFilters)) match {
             case Some(i) => respond(i.template, OK, contentType = "text/txt")
             case _ => respond("", NOT_FOUND)
           })
