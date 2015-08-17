@@ -2,7 +2,6 @@ package unit.com.newmotion.core.overviews
 
 import com.newmotion.core.overviews.Overview
 import com.newmotion.core.tariffs.Tariff
-import org.joda.time.LocalDateTime
 import unit.com.newmotion.core.BaseSpec
 
 class OverviewSpec extends BaseSpec {

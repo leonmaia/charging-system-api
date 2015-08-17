@@ -70,4 +70,10 @@ class TariffSpec extends BaseSpec {
     tFromKey.feePerKWh should be(0.25D)
     tFromKey.activeStarting should be(s"$nextYear-10-28T06:00:00Z")
   }
+
+  behavior of "#createCSVKey"
+  it should "return a Tariff" in {
+    val t = Tariff(1.00D, 0.25D, 0.50D, s"$nextYear-10-28T06:00:00Z").createCSVKey
+    t should be(s"$nextYear-10-28T06:00:00Z,1.0,0.25,0.5")
+  }
 }

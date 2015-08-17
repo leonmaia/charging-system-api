@@ -108,4 +108,16 @@ class TransactionSpec extends BaseSpec {
     transaction.endTime should be("2014-10-28T16:45:13Z")
     transaction.volume should be(32.03)
   }
+
+  behavior of "#createCSVKey"
+
+  it should "return a csv key" in {
+    val t = Transaction("john", "2014-10-28T09:34:17Z", "2014-10-28T16:45:13Z", 30.55D).createCSVKey
+    t should be("john,2014-10-28T09:34:17Z,2014-10-28T16:45:13Z,30.55")
+  }
+
+  it should "should not put total even if present" in {
+    val t = Transaction("john", "2014-10-28T09:34:17Z", "2014-10-28T16:45:13Z", 30.55D, Option(150.05D)).createCSVKey
+    t should be("john,2014-10-28T09:34:17Z,2014-10-28T16:45:13Z,30.55")
+  }
 }
