@@ -7,6 +7,8 @@ import com.newmotion.server.RedisStore
 import com.twitter.finagle.redis.util.CBToString
 import com.twitter.util.Future
 
+import scala.math.BigDecimal.RoundingMode._
+
 trait TransactionFees extends RedisStore {
   def requestTransactions: Future[List[Transaction]] = {
     getAllMembers("transactions") flatMap {
@@ -18,13 +20,13 @@ trait TransactionFees extends RedisStore {
     }
   }
 
-  //todo same method in Overview apply
   def applyFee(transactions: List[String], tariffs: List[String] = List.empty): List[Transaction] = {
     transactions.map { transactionKey =>
       val listTariffs = tariffs.map(Tariff.fromCSV)
       val transaction = Transaction.fromCSV(transactionKey)
       Fee(transaction, listTariffs) match {
-        case Some(fee) => transaction.copy(total = Option(fee.total))
+        case Some(fee) => transaction.copy(total = Option(fee.total.setScale(2, HALF_EVEN)))
+
         case _ => transaction
       }
     }

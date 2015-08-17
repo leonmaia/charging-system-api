@@ -1,23 +1,10 @@
 package com.newmotion.core.overviews
 
-import com.newmotion.core.fees.Fee
-import com.newmotion.core.tariffs.Tariff
 import com.newmotion.core.transactions.Transaction
 
-import scala.math.BigDecimal.RoundingMode._
-
-object Overview {
+object Overview extends TransactionFees {
   def apply(transactions: List[String], tariffs: List[String] = List.empty): Overview = {
-    val list = transactions.map { transactionKey =>
-      val listTariffs = tariffs.map(Tariff.fromCSV)
-      val transaction = Transaction.fromCSV(transactionKey)
-      Fee(transaction, listTariffs) match {
-        case Some(fee) =>
-          transaction.copy(total = Option(fee.total.setScale(2, HALF_EVEN)))
-        case _ => transaction
-      }
-    }
-    Overview(list)
+    Overview(applyFee(transactions, tariffs))
   }
 }
 
