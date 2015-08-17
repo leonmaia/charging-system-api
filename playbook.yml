@@ -3,7 +3,7 @@
   serial: 1
   user: vagrant
   vars:
-    project_name: newmotion
+    project_name: charging-system-api
 
   tasks:
     - include: ansible/tasks/java8.yml

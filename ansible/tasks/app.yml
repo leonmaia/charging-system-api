@@ -1,6 +1,6 @@
 ---
 - name: Add Upstart script
-  copy: src=ansible/files/startup/newmotion.conf dest=/etc/init/newmotion.conf owner=root group=root mode=0644
+  copy: src=ansible/files/startup/chargingsystem.conf dest=/etc/init/chargingsystem.conf owner=root group=root mode=0644
   sudo: yes
   tags:
     - api
@@ -13,8 +13,8 @@
   tags:
     - app
 
-- name: Start newmotion service if its not running
-  service: name=newmotion state=started enabled=yes
+- name: Start charging-system-api service if its not running
+  service: name=charging-system-api state=started enabled=yes
   sudo: yes
   tags:
     - api

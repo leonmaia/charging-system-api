@@ -1,4 +1,4 @@
-name := "newmotion-api"
+name := "charging-system-api"
 
 fork in run := true
 
