@@ -16,12 +16,18 @@ class InvoiceHandlerSpec extends BaseSpec {
   }
 
   behavior of "#show"
-    it should "return status code 200" in {
+  it should "return status code 200" in {
+    val response = Await.result(handler.show("2014", month = "08", "pete")(Request()))
 
-      val response = Await.result(handler.show("2014", month = "08", "pete")(Request()))
+    response.statusCode should be(200)
+  }
 
-      response.statusCode should be(200)
-    }
+  it should "respond with content type text/txt" in {
+    val response = Await.result(handler.show("2014", month = "08", "pete")(Request()))
+
+    response.statusCode should be(200)
+    response.contentType.get should be("text/txt;charset=utf-8")
+  }
 
   behavior of "#show#createFilters"
   it should "return a list of filters" in {

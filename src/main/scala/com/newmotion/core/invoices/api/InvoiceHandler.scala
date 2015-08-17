@@ -17,7 +17,7 @@ class InvoiceHandler extends RedisStore {
     }
 
     def apply(request: Request): Future[Response] = {
-      Future(respond(s"Errors!", OK))
+      Future(respond(s"Errors!", OK, contentType = "text/txt"))
     }
   }
 }
