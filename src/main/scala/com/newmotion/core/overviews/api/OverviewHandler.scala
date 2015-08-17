@@ -17,10 +17,9 @@ class OverviewHandler extends Service[Request, Response] with Tracing with Redis
         getAllMembers("transactions") flatMap {
           transactions =>
             getAllMembers("tariffs") map { tariffs =>
-              if (tariffs.isEmpty) {
-                respond(Overview(transactions.map(CBToString(_))).value, OK, contentType = "text/csv")
-              } else {
-                val csv = Overview(transactions.map(CBToString(_)), tariffs.map(CBToString(_))).value
+              if (tariffs.isEmpty) respond(Overview(transactions.map(CBToString(_))).asCSV, OK, contentType = "text/csv")
+              else {
+                val csv = Overview(transactions.map(CBToString(_)), tariffs.map(CBToString(_))).asCSV
                 respond(csv, OK, contentType = "text/csv")
               }
             }

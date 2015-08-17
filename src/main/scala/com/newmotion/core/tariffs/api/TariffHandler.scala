@@ -19,8 +19,7 @@ class TariffHandler extends Service[Request, Response] with Tracing with RedisSt
       case Success(t) =>
         isValid(t.activeStarting) map {
           case x if x =>
-            val key = s"${t.activeStarting},${t.startFee},${t.hourlyFee},${t.feePerKWh}"
-            addSet("tariffs", key)
+            addSet("tariffs", t.createCSVKey)
             respond("", CREATED)
           case x if !x => respond("", BAD_REQUEST)
         }

@@ -38,5 +38,7 @@ case class Tariff(startFee: BigDecimal, hourlyFee: BigDecimal, feePerKWh: BigDec
 
   require(activeStarting.nonEmpty)
   require(activeStartingDT.isAfterNow)
+
+  def createCSVKey = s"$activeStarting,$startFee,$hourlyFee,$feePerKWh"
 }
 

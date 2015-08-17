@@ -6,17 +6,24 @@ import com.newmotion.core.transactions.Transaction
 
 object Overview {
   def apply(transactions: List[String], tariffs: List[String] = List.empty): Overview = {
-    val transactionsWithTotal = transactions.map { t =>
+    val list = transactions.map { t =>
       val listTariffs = tariffs.map( v => Tariff.fromCSV(v))
       val transaction = Transaction.fromCSV(t)
       Fee(transaction, listTariffs) match {
-        case Some(f) => s"$t,${f.total}"
-        case _ => t
+        case Some(f) => transaction.copy(total = Option(f.total))
+        case _ => transaction
       }
     }
-    Overview(transactionsWithTotal.mkString(" "))
+    Overview(list)
   }
 }
 
-case class Overview(value: String)
+case class Overview(transactions: List[Transaction]) {
+  def asCSV = transactions.map { t =>
+    t.total match {
+      case Some(total) => s"${t.createCSVKey},$total"
+      case _ => t.createCSVKey
+    }
+  }.mkString(" ")
+}
 

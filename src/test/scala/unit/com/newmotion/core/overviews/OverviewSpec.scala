@@ -19,7 +19,7 @@ class OverviewSpec extends BaseSpec {
                      s"${t1.activeStarting},${t1.startFee},${t1.hourlyFee},${t1.feePerKWh}" :: Nil
 
     val result = s"pete,${nextYear+1}-10-27T13:32:14Z,${nextYear+1}-10-27T14:32:14Z,13.21,5.96 john,${nextYear+1}-10-28T09:34:17Z,${nextYear+1}-10-28T16:45:13Z,32.03,14.70"
-    Overview(transactions, tariffList).value should be(result)
+    Overview(transactions, tariffList).asCSV should be(result)
   }
 
   behavior of "#apply without tariff"
@@ -31,6 +31,6 @@ class OverviewSpec extends BaseSpec {
     val tariffList = s"${t1.activeStarting},${t1.startFee},${t1.hourlyFee},${t1.feePerKWh}" :: Nil
 
     val result = s"john,$nextYear-10-28T09:34:17Z,$nextYear-10-28T16:45:13Z,32.03"
-    Overview(transactions, tariffList).value should be(result)
+    Overview(transactions, tariffList).asCSV should be(result)
   }
 }

@@ -32,7 +32,7 @@ object Transaction extends JsonSupport {
                 volume = BigDecimal(values(Position.Volume)))
   }
 }
-case class Transaction(@JsonProperty("customerId") id: String, startTime: String, endTime: String, volume: BigDecimal) {
+case class Transaction(@JsonProperty("customerId") id: String, startTime: String, endTime: String, volume: BigDecimal, total: Option[BigDecimal] = Option.empty) {
   require(id.nonEmpty)
   require(startTime.nonEmpty)
   require(endTime.nonEmpty)
@@ -43,4 +43,6 @@ case class Transaction(@JsonProperty("customerId") id: String, startTime: String
   private val duration = ds.getDuration(stDate, edDate)
 
   @JsonIgnore val durationInDecimal = ds.durationToDecimal(duration)
+
+  def createCSVKey = s"$id,$startTime,$endTime,$volume"
 }
