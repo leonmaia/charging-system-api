@@ -89,7 +89,7 @@ class TariffHandlerSpec extends BaseSpec {
 
   behavior of "#extractFirstField"
   it should "represent activeStarting string" in {
-    handler.extractFirstField(s"$nextYear-10-28T06:00:00Z,more_data") should be(s"$nextYear-10-28T06:00:00Z")
+    handler.extractActiveStarting(s"$nextYear-10-28T06:00:00Z,more_data") should be(s"$nextYear-10-28T06:00:00Z")
   }
 
   behavior of "#isValid"

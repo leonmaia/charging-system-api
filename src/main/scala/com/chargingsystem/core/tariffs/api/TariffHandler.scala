@@ -27,16 +27,16 @@ class TariffHandler extends Service[Request, Response] with Tracing with RedisSt
     }
   }
 
-  def extractFirstField(v: String) = v.substring(0, v.indexOf(","))
+  def extractActiveStarting(v: String) = v.substring(0, v.indexOf(","))
 
   // todo remove this when sscan is implemented by finagle-redis
-  def isValid(value: String): Future[Boolean] = {
+  def isValid(activeStarting: String): Future[Boolean] = {
     val ds = new DateSupport
-    val date = ds.parse(value)
+    val activeStartingDate = ds.parse(activeStarting)
     getAllMembers("tariffs") map {
-      resp =>
-        val total = resp.size
-        val validDates = resp.takeWhile(r => ds.parse(extractFirstField(CBToString(r))).isBefore(date)).size
+      tariffs =>
+        val total = tariffs.size
+        val validDates = tariffs.takeWhile(tariffKey => ds.parse(extractActiveStarting(CBToString(tariffKey))).isBefore(activeStartingDate)).size
         if (total > validDates) false else true
     }
   }
