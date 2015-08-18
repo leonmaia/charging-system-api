@@ -34,7 +34,7 @@ Create new tariff. Required fields are:
 
 * startFee
 * hourlyFee
-* feePerkWh
+* feePerKWh
 * activeStarting, and should be after current time
 
 #### Example

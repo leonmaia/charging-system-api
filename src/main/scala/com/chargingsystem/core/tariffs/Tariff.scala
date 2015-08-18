@@ -32,10 +32,13 @@ object Tariff extends JsonSupport {
   }
 }
 
-case class Tariff(startFee: BigDecimal, hourlyFee: BigDecimal, feePerKWh: BigDecimal, activeStarting: String) {
+case class Tariff(startFee: BigDecimal = 0.00D, hourlyFee: BigDecimal = 0.00D, feePerKWh: BigDecimal = 0.00D, activeStarting: String) {
   private val ds = new DateSupport
   private val activeStartingDT = ds.parse(activeStarting)
 
+  require(startFee >= 0.00D)
+  require(hourlyFee >= 0.00D)
+  require(feePerKWh >= 0.00D)
   require(activeStarting.nonEmpty)
   require(activeStartingDT.isAfterNow)
 

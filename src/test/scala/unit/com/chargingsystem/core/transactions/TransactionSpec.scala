@@ -27,6 +27,19 @@ class TransactionSpec extends BaseSpec {
 
   behavior of "invalid json"
 
+  it should "fail if volume not supplied" in {
+    intercept[NullPointerException] {
+      val body =
+        """
+          |{
+          |"customerId": "john",
+          |"startTime": "2014-10-28T09:34:17Z",
+          |"endTime": "2014-10-28T16:45:13Z"
+          |}""".stripMargin
+      Transaction(buildRequest(body.toString))
+    }
+  }
+
   it should "fail on endTime requirement" in {
     intercept[NullPointerException] {
       val body =

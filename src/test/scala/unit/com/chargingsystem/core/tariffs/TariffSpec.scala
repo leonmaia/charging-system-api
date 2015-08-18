@@ -26,6 +26,18 @@ class TariffSpec extends BaseSpec {
 
   behavior of "invalid json"
 
+  it should "fail on requirements" in {
+    intercept[NullPointerException] {
+      val body =
+        s"""{
+           |"startFee": 0.20,
+           |"hourlyFee": 1.00,
+           |"activeStarting": "$nextYear-10-28T06:00:00Z"
+           |}""".stripMargin
+      Tariff(buildRequest(body.toString))
+    }
+  }
+
   it should "fail on activeStarting requirement" in {
     intercept[NullPointerException] {
       val body =

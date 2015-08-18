@@ -36,6 +36,7 @@ case class Transaction(@JsonProperty("customerId") id: String, startTime: String
   require(id.nonEmpty)
   require(startTime.nonEmpty)
   require(endTime.nonEmpty)
+  require(volume > 0.00D)
 
   private val dateSupport = new DateSupport()
   private val startDate = dateSupport.parse(startTime)
