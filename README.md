@@ -7,10 +7,11 @@ Introduction
 -----------
 Charging System API built using Finagle with Scala.
 
-Libraries:
+Frameworks:
 
 - Joda-Time: `SimpleDateFormat` is not thread-safe.
 - Scalatest: Test library for scala.
+- Finagle: Finagle is built atop of Netty and is very efficient for distributed tasks, also uses Twitter Futures which are better at avoiding context switches. Because of these reasons I've choose it for the task.
 - Redis: [`Finagle-Redis`](https://github.com/twitter/finagle/tree/develop/finagle-redis) was choosed for this task. Jedis is another pretty good library but Finagle-Redis is `non-blocking`, which led me to choose it.
 
 Overview
